@@ -4,6 +4,43 @@ body {
     background-color: rgb(40, 40, 40);
 }
 
+* {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+}
+
+#home-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 120px;
+    width: 1000px;
+    height: 700px;
+}
+
+#home-container img {
+    width: 100%;
+}
+
+#play {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 1rem;
+    padding: 10px;
+    font-size: 1.5rem;
+    font-weight: 700;
+    width: 50%;
+    color: aliceblue;
+    cursor: pointer;
+    background-color: rgba(0, 0, 0, 0);
+    border: 2px solid aliceblue;
+    transition: 0.3s;
+}
+
+button:hover {
+    transform: scale(1.05);
+}
+
 #container {
     display: grid;
     grid-template-columns: repeat(10, 1fr);
@@ -38,6 +75,6 @@ body {
     top: 780px;
 }
 
-.break {
+.brick {
     background-color: aliceblue;
 }
