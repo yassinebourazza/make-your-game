@@ -132,6 +132,8 @@ function ballTouchTheBricks() {
                 let br = current.getBoundingClientRect()                
                 if (ballPlace.x+(ballPlace.width/2) > br.x && ballPlace.x + (ballPlace.width/2) < br.x+br.width) {
                     current.remove()
+                    console.log(ballPlace.y+ballPlace.height,layers[layer].yHeight);
+                    
                     console.log(br,ballPlace, 'move y');
                     moveY = -moveY
                 }
