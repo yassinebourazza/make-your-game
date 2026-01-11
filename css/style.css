@@ -1,7 +1,7 @@
 body {
     display: flex;
     justify-content: center;
-    background-color: rgb(40, 40, 40);
+    background-color: rgb(30, 30, 30);
 }
 
 * {
@@ -16,13 +16,30 @@ body {
     align-items: center;
     margin-top: 120px;
     width: 1000px;
-    height: 700px;
+    gap: 20px;
 }
 
 #home-container img {
-    width: 100%;
+    width: 80%;
 }
 
+#home-container button img {
+    width: auto;
+    height: 30px;
+}
+
+#home-container button {
+    display: flex;
+    color: aliceblue;
+    justify-content: center;
+    width: 400px;
+    max-width: 90vw;
+    min-width: 200px;
+    gap: 20px;
+    height: 50px;
+    border-radius: 20px;
+}
+/* 
 #play {
     display: flex;
     justify-content: center;
@@ -37,14 +54,14 @@ body {
     background-color: rgba(0, 0, 0, 0);
     border: 2px solid aliceblue;
     transition: 0.3s;
-}
+} */
 
 button:hover {
     transform: scale(1.05);
 }
 
-#game {
-    display: flex;
+#game-container {
+    display: none;
     flex-direction: column;
     gap: 10px;
     margin-top: 40px;
@@ -53,7 +70,7 @@ button:hover {
     border:  2px solid aliceblue;
 }
 
-#game span {
+#game-container span {
     display: flex;
     margin-top: 5px;
     justify-content: space-between;
@@ -67,6 +84,11 @@ p {
     color: aliceblue;
     display: flex;
     justify-content: center;
+    
+}
+
+
+header p {
     width: 100px;
 }
 
@@ -75,7 +97,9 @@ p {
     grid-template-columns: repeat(10, 1fr);
     grid-template-rows: repeat(16, 1fr);
     width: 1000px;
-    height: 700px;
+    max-width: 90vw;
+    min-width: 300px;
+    height: 600px;
     gap: 5px;
     padding: 5px;
     border: 2px solid white;
@@ -89,7 +113,7 @@ p {
     width: 1rem;
     height: 1rem;
     border-radius: 20px;
-    top: 650px;
+    top: 600px;
 }
 
 #breaker { 
@@ -100,11 +124,33 @@ p {
     border-radius: 20px;
     width: 120px;
     height: 12px;
-    top: 780px;
+    top: 700px;
+}
+
+#press-to-play {
+    position: absolute;
+    font-size: 2rem;
+    top: 500px;
+    width: 100%;
+    justify-self: center;
+   animation: fadeInOut 1s infinite;
+}
+
+@keyframes fadeInOut {
+    0% {
+        opacity: 0;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
 }
 
 .brick {
     background-color: aliceblue;
+    z-index: 1;
 }
 
 #control {
@@ -130,7 +176,7 @@ p {
     gap: 10px
 }
 
-#control div:nth-child(2) button {
+button {
     all: unset;
     display: flex;
     align-items: center;
@@ -140,7 +186,7 @@ p {
     transition: 0.3s;
 }
 
-#control div:nth-child(2) button:hover {
+button:hover {
     transform: scale(1.05);
     background-color: rgba(240, 248, 255, 0.2);
 }
@@ -149,4 +195,69 @@ p {
 
 #control img {
     height: 30px;
+}
+
+#pause-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 100vw;
+    height: 100vh;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    z-index: 800;
+}
+
+#pause-container p:nth-child(1) {
+    font-size: 5rem;
+    margin-bottom: 20px;
+}
+
+#pause-container img {
+    height: 30px;
+}
+#pause-container button {
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    height: 50px;
+    border-radius: 20px;
+    gap: 10px;
+
+}
+
+#final-game-container {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: absolute;
+    background-color: rgba(0, 0, 0, 0.8);
+    width: 100vw;
+    height: 100vh;
+    gap: 20px;
+    backdrop-filter: blur(10px);
+    z-index: 801;
+}
+
+#final-game-container p:nth-child(1) {
+    font-size: 4rem;
+    width: auto;
+    margin-bottom: 20px;
+}
+
+#final-game-container img {
+    height: 30px;
+}
+#final-game-container button {
+    display: flex;
+    justify-content: center;
+    width: 200px;
+    height: 50px;
+    border-radius: 20px;
+    gap: 10px;
+
 }

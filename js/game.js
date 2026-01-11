@@ -1,123 +1,147 @@
 import { BrickGenerator } from "./bricks.js"
 
+
+//pages
+const gameContainer = document.getElementById('game-container')
+const homeContainer = document.getElementById('home-container')
+const pauseContainer = document.getElementById('pause-container')
+const finalGameContainer = document.getElementById('final-game-container')
+
+//elements
+const ball = document.getElementById('ball')
+const breaker = document.getElementById('breaker')
+const container = document.getElementById('container')
+const pressToPLay = document.getElementById('press-to-play')
+let chances = document.getElementById('chances')
+let heartLives = document.getElementsByClassName('lives')
+
+
+//buttons
+const playButton = document.getElementById('play')
+const pauseButton = document.getElementById('pause-button')
+const resumeButton = document.getElementById('resume-button')
+const restartButton = document.getElementsByClassName('restart-button')
+const exitButton = document.getElementsByClassName('exit-button')
+
+//score
+let score = document.getElementById('score')
+let highScore = document.getElementById('high-score')
+
+//action
+let pressToPLayFlag = true
+
+
 let currentX = 0
 let currentY = 0
 let moveY = -5
 let moveX = 5
 let lives = 3
-let flag = true
 let layers = {}
 
-let container, ball, breaker, breakerPlace, ballPlace, containerPlace, heartLives;
+let
+    ballPlace,
+    animationBallMove,
+    initialBallTop,
+    initialBallLeft,
+    initialBreakerLeft;
 
 let moveLeft = false;
 let moveRight = false;
 
-let play = document.getElementById('play')
 
 
-function started() {
+function started(flag) {
+    lives = 3
+    if (parseInt(highScore.innerHTML)<parseInt(score.innerHTML)) highScore.innerHTML = score.innerHTML
+    score.innerHTML= `0`
+    chances.innerHTML = `<span>Lives </span>
+            <img class="lives" src="assets/heart.svg" alt="heart">
+            <img class="lives" src="assets/heart.svg" alt="heart">
+            <img class="lives" src="assets/heart.svg" alt="heart">`
+    gameContainer.style.display = 'flex'
+    pressToPLay.style.display = 'flex'
+    homeContainer.style.display = 'none'
+  
 
-    document.body.innerHTML = `
-    <div id="game">
-        <header>
-            <span><p>High Score</p><p>Score</p><p>Time</p></span>
-            <span><p>0</p><p>15</p><p>10:00</p></span>
-        </header>
-        <div id="container">
-          <div id="ball"></div>
-          <div id="breaker"></div>
-       </div>
-       <div id="control">
-        <div><span>lives :</span>
-        <img class="lives" src="assets/heart.svg" alt="heart">
-        <img class="lives" src="assets/heart.svg" alt="heart">
-        <img class="lives" src="assets/heart.svg" alt="heart">
-        </div>
-        <div>
-        <button id="pause-button"><img src="assets/pause.svg" alt="pause"><p>Pause</p></button>
-        <button id="home-button"><img src="assets/home.svg" alt="home"><p>Home</p></button></div>
-       </div>
-    </div>
-   `
-    container = document.getElementById('container')
-    ball = document.getElementById('ball')
-    breaker = document.getElementById('breaker')
-    heartLives = document.getElementsByClassName('lives')
-    breakerPlace = breaker.getBoundingClientRect()
-    containerPlace = container.getBoundingClientRect()
+    let bricks = Array.from(document.getElementsByClassName('brick'))
+    for (let brick of bricks) {
+        brick.remove()
+    }
+
     layers = BrickGenerator()
-    for (let i=1;i<=50 ;i++) {
-        let g = document.getElementById('brick-'+i)            
-        g.remove()
+    if (flag) {
+        initialBallLeft = ball.offsetLeft
+        initialBallTop = ball.offsetTop
+        initialBreakerLeft = breaker.offsetLeft
+    } else {
+      resetGame()
     }
 }
 
 
 function BallMovement() {
-    
-    ballPlace = ball.getBoundingClientRect()
-    breakerPlace = breaker.getBoundingClientRect()
-    ball.style.transform = `translate(${currentX+moveX}px,${currentY+moveY}px)`
+
+    ball.style.left = ball.offsetLeft + moveX + 'px'
+    ball.style.top = ball.offsetTop + moveY + 'px'
     currentX += moveX
     currentY += moveY
-    
-    ballTouchTheBreaker()
-   
-    if (ballPlace.x > containerPlace.x+(containerPlace.width-2)-(ballPlace.width)) {
-        moveX = moveX < 0 ? moveX : -moveX
-    } else if (ballPlace.x <containerPlace.x) {
-        moveX = moveX > 0 ? moveX : -moveX
-    } else if (ballPlace.y < containerPlace.y) {
-        moveY = moveY > 0 ? moveY : -moveY
-    } else if (ballPlace.y + ballPlace.height > containerPlace.y+(containerPlace.height)-(ballPlace.height/2)) {
-       lives--
-        if (lives >0) {
-            ball.style.transform = `translate(0px,0px)`
-            moveX = 5
-            moveY = -5
-            currentX = 0
-            currentY = 0
-            heartLives[lives].remove()
-       } else {
-        heartLives[lives].remove()
-        return
-       }
-    }
 
     ballTouchTheBricks()
+
+    if (ball.offsetLeft >= container.offsetLeft + (container.offsetWidth - 2) - (ball.offsetWidth)) {
+        moveX = moveX <= 0 ? moveX : -moveX
+    } else if (ball.offsetLeft < container.offsetLeft) {
+        moveX = moveX >= 0 ? moveX : -moveX
+    } else if (ball.offsetTop < container.offsetTop) {
+        moveY = moveY >= 0 ? moveY : -moveY
+    } else if (ball.offsetTop + ball.offsetHeight >= container.offsetTop + (container.offsetHeight) - (ball.offsetHeight / 2)) {
+        console.log(lives, heartLives);
+        lives--
+
+        if (lives > 0) {
+            heartLives[lives].remove()
+            return resetGame()
+        } else {
+            heartLives[lives].remove()
+            finalGameContainer.style.display ='flex'
+            pressToPLayFlag= false
+            return resetGame()
+        }
+    }
+
+    ballTouchTheBreaker()
     breakerMove()
-    requestAnimationFrame(BallMovement)
+    animationBallMove = requestAnimationFrame(BallMovement)
 }
 
 function ballTouchTheBreaker() {
-     if (ballPlace.y + ballPlace.height > breakerPlace.y && ballPlace.y < breakerPlace.y  
-        && ballPlace.x + (ballPlace.width/2) > breakerPlace.x 
-        && ballPlace.x + (ballPlace.width/2) < breakerPlace.x+breakerPlace.width) {
-        if (ballPlace.x + (ballPlace.width/2) < breakerPlace.x+(breakerPlace.width*1/7)) {
+    if (ball.offsetTop + ball.offsetHeight >= breaker.offsetTop && ball.offsetTop <= breaker.offsetTop
+        && ball.offsetLeft + (ball.offsetWidth / 2) >= breaker.offsetLeft
+        && ball.offsetLeft + (ball.offsetWidth / 2) <= breaker.offsetLeft + breaker.offsetWidth) {
+        if (ball.offsetLeft + (ball.offsetWidth / 2) <= breaker.offsetLeft + (breaker.offsetWidth * 1 / 7)) {
             moveX = -5
             moveY = -5
-        } else if (ballPlace.x + (ballPlace.width/2) < breakerPlace.x+(breakerPlace.width*2/7)) {
+        } else if (ball.offsetLeft + (ball.offsetWidth / 2) < breaker.offsetLeft + (breaker.offsetWidth * 2 / 7)) {
             moveX = -3
             moveY = -7
-        } else if (ballPlace.x + (ballPlace.width/2) > breakerPlace.x+(breakerPlace.width*6/7)) {
+        } else if (ball.offsetLeft + (ball.offsetWidth / 2) > breaker.offsetLeft + (breaker.offsetWidth * 6 / 7)) {
             moveX = 5
             moveY = -5
-        }else if (ballPlace.x + (ballPlace.width/2) > breakerPlace.x+(breakerPlace.width*5/7)) {
+        } else if (ball.offsetLeft + (ball.offsetWidth / 2) > breaker.offsetLeft + (breaker.offsetWidth * 5 / 7)) {
             moveX = 3
             moveY = -7
         } else {
-            moveY =  moveY < 0 ? moveY : -moveY
+            moveY = moveY <= 0 ? moveY : -moveY
         }
-        
+
     }
 }
 
 function breakerMove() {
-    if(moveRight && parseInt(breaker.offsetLeft)-5 < containerPlace.x + containerPlace.width - breakerPlace.width - 10) {
-        breaker.style.left = breaker.offsetLeft + 7 + 'px';    
+    if (moveRight && parseInt(breaker.offsetLeft) - 5 <= container.offsetLeft + container.offsetWidth - breaker.offsetWidth - 10) {
+        breaker.style.left = breaker.offsetLeft + 7 + 'px';
     }
-    if(moveLeft && parseInt(breaker.offsetLeft)-5 > containerPlace.x) {
+    if (moveLeft && parseInt(breaker.offsetLeft) - 5 >= container.offsetLeft) {
         breaker.style.left = breaker.offsetLeft - 7 + 'px';
     }
 
@@ -126,53 +150,91 @@ function breakerMove() {
 
 function ballTouchTheBricks() {
     for (let layer in layers) {
-        if (ballPlace.y > layers[layer].yHeight) return
-        if (ballPlace.y+ballPlace.height > layers[layer].y) {
+        if (ball.offsetTop >= layers[layer].yHeight) return
+        if (ball.offsetTop + ball.offsetHeight >= layers[layer].y) {
+            console.log(ball.offsetTop + ball.offsetHeight >= layers[layer].y);
+
             for (let current of layers[layer].bricks) {
-                let br = current.getBoundingClientRect()                
-                if (ballPlace.x+(ballPlace.width/2) > br.x && ballPlace.x + (ballPlace.width/2) < br.x+br.width) {
+                let br = current.getBoundingClientRect()
+                if (ball.offsetLeft + (ball.offsetWidth / 2) >= br.x && ball.offsetLeft + (ball.offsetWidth / 2) <= br.x + br.width) {
                     current.remove()
-                    console.log(ballPlace.y+ballPlace.height,layers[layer].yHeight);
-                    
-                    console.log(br,ballPlace, 'move y');
+                    score.innerHTML = Number.parseInt(score.innerHTML) + 50 
+                    console.log(br, ballPlace, 'move y');
                     moveY = -moveY
                 }
-                if (ballPlace.y+(ballPlace.width/2) < layers[layer].yHeight && ballPlace.y+(ballPlace.width/2) > layers[layer].y) {
-                if ((ballPlace.x+(ballPlace.width) > br.x && ballPlace.x < br.x)
-                        ||(ballPlace.x < br.x+br.width && ballPlace.x+ballPlace.width > br.x+br.width)) {
+                if (ball.offsetTop + (ball.offsetWidth / 2) <= layers[layer].yHeight && ball.offsetTop + (ball.offsetWidth / 2) >= layers[layer].y) {
+                    if ((ball.offsetLeft + (ball.offsetWidth) >= br.x && ball.offsetLeft < br.x)
+                        || (ball.offsetLeft <= br.x + br.width && ball.offsetLeft + ball.offsetWidth >= br.x + br.width)) {
                         current.remove()
-                        console.log(br,ballPlace, 'move x');
+                        score.innerHTML = Number.parseInt(score.innerHTML) + 50 
+                        console.log(br, ballPlace, 'move x');
                         moveX = -moveX
+                    }
                 }
-                }
-            
             }
-            
         }
-        
-    }    
+    }
 }
 
+function resetGame() {
+        moveY = -5
+        moveX = 5
+        ball.style.top = initialBallTop + 'px'
+        ball.style.left = initialBallLeft + 'px'
+        breaker.style.left = initialBreakerLeft + 'px'
+        pressToPLayFlag = true
+}
 
-
-addEventListener('keydown', (e)=> {
-    if (e.key == ' ' && flag) {
-        flag = !flag
+document.addEventListener('keydown', (e) => {
+    if (e.key == ' ' && pressToPLayFlag) {
+        pressToPLayFlag = false
+        pressToPLay.style.display='none'
         requestAnimationFrame(BallMovement)
-        
     }
 })
 
 document.addEventListener('keydown', e => {
-    if(e.key === 'ArrowRight') moveRight = true;
-    if(e.key === 'ArrowLeft') moveLeft = true;
+    if (e.key === 'ArrowRight') moveRight = true;
+    if (e.key === 'ArrowLeft') moveLeft = true;
 });
 
 document.addEventListener('keyup', e => {
-    if(e.key === 'ArrowRight') moveRight = false;
-    if(e.key === 'ArrowLeft') moveLeft = false;
+    if (e.key === 'ArrowRight') moveRight = false;
+    if (e.key === 'ArrowLeft') moveLeft = false;
+    if (e.key === 'p') {
+        pauseContainer.style.display = 'flex'
+        cancelAnimationFrame(animationBallMove)
+    }
 });
 
-play.addEventListener('click', ()=> {
-    started()
+playButton.addEventListener('click', () => {
+    started(true)
 })
+
+
+pauseButton.addEventListener('click', () => {
+    pauseContainer.style.display = 'flex'
+    cancelAnimationFrame(animationBallMove)
+})
+resumeButton.addEventListener('click', () => {
+    pauseContainer.style.display = 'none'
+    pressToPLay.style.display = 'flex'
+    pressToPLayFlag = true
+})
+for (let restart of restartButton) {
+    restart.addEventListener('click', () => {
+        pauseContainer.style.display= 'none'
+        finalGameContainer.style.display = 'none'      
+        started(false)
+    })
+}
+
+for (let exit of exitButton) {
+    exit.addEventListener('click', ()=> {
+        gameContainer.style.display = 'none'
+        pauseContainer.style.display= 'none'
+        finalGameContainer.style.display = 'none'
+        homeContainer.style.display = 'flex'
+        resetGame()
+    })
+}
