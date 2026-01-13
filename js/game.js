@@ -14,7 +14,7 @@ const container = document.getElementById('container')
 const pressToPLay = document.getElementById('press-to-play')
 let chances = document.getElementById('chances')
 let heartLives = document.getElementsByClassName('lives')
-
+let finalGameTitle = document.getElementById('final-game-title')
 
 //buttons
 const playButton = document.getElementById('play')
@@ -26,11 +26,12 @@ const exitButton = document.getElementsByClassName('exit-button')
 //score
 let score = document.getElementById('score')
 let highScore = document.getElementById('high-score')
+let time = document.getElementById('time')
 
 //action
 let pressToPLayFlag = true
 
-
+let frame = 0
 let currentX = 0
 let currentY = 0
 let moveY = -5
@@ -38,7 +39,9 @@ let moveX = 5
 let lives = 3
 let layers = {}
 
-let
+let bricks,
+    minutes,
+    seconds,
     ballPlace,
     animationBallMove,
     initialBallTop,
@@ -52,8 +55,11 @@ let moveRight = false;
 
 function started(flag) {
     lives = 3
+    seconds=0
+    minutes= 5
     if (parseInt(highScore.innerHTML)<parseInt(score.innerHTML)) highScore.innerHTML = score.innerHTML
     score.innerHTML= `0`
+    time.innerHTML = `5:00`
     chances.innerHTML = `<span>Lives </span>
             <img class="lives" src="assets/heart.svg" alt="heart">
             <img class="lives" src="assets/heart.svg" alt="heart">
@@ -63,7 +69,7 @@ function started(flag) {
     homeContainer.style.display = 'none'
   
 
-    let bricks = Array.from(document.getElementsByClassName('brick'))
+    bricks = Array.from(document.getElementsByClassName('brick'))
     for (let brick of bricks) {
         brick.remove()
     }
@@ -76,6 +82,9 @@ function started(flag) {
     } else {
       resetGame()
     }
+
+    bricks = document.getElementsByClassName('brick')
+
 }
 
 
@@ -101,7 +110,7 @@ function BallMovement() {
         if (lives > 0) {
             heartLives[lives].remove()
             return resetGame()
-        } else {
+        } else {            
             heartLives[lives].remove()
             finalGameContainer.style.display ='flex'
             pressToPLayFlag= false
@@ -109,9 +118,35 @@ function BallMovement() {
         }
     }
 
+    if (seconds == 0 && minutes ==0) {        
+            finalGameContainer.style.display ='flex'
+            pressToPLayFlag= false
+            return resetGame()
+    }
+
+    frame++
+    timer()
     ballTouchTheBreaker()
+    if (bricks.length==0) {
+        finalGameTitle.innerText = 'You Win'
+        finalGameContainer.style.display ='flex'
+        pressToPLayFlag= false
+        return resetGame()
+    }
     breakerMove()
     animationBallMove = requestAnimationFrame(BallMovement)
+}
+
+function timer() {
+    if (frame==60) {
+        frame =0
+        seconds--
+        if (seconds==-1) {
+            seconds = 59
+            minutes--
+        }
+        time.innerHTML = `${minutes.toString().padStart(2,'0')}:${seconds.toString().padStart(2,'0')}`
+    }
 }
 
 function ballTouchTheBreaker() {
@@ -160,15 +195,16 @@ function ballTouchTheBricks() {
                     current.remove()
                     score.innerHTML = Number.parseInt(score.innerHTML) + 50 
                     console.log(br, ballPlace, 'move y');
-                    moveY = -moveY
-                }
-                if (ball.offsetTop + (ball.offsetWidth / 2) <= layers[layer].yHeight && ball.offsetTop + (ball.offsetWidth / 2) >= layers[layer].y) {
+                    moveY = -moveY   
+                    bricks = document.getElementsByClassName('brick')
+                } else if (ball.offsetTop + (ball.offsetWidth / 2) <= layers[layer].yHeight && ball.offsetTop + (ball.offsetWidth / 2) >= layers[layer].y) {
                     if ((ball.offsetLeft + (ball.offsetWidth) >= br.x && ball.offsetLeft < br.x)
                         || (ball.offsetLeft <= br.x + br.width && ball.offsetLeft + ball.offsetWidth >= br.x + br.width)) {
                         current.remove()
                         score.innerHTML = Number.parseInt(score.innerHTML) + 50 
                         console.log(br, ballPlace, 'move x');
                         moveX = -moveX
+                        bricks = document.getElementsByClassName('brick')
                     }
                 }
             }
