@@ -55,6 +55,7 @@ let moveRight = false;
 
 function started(flag) {
     lives = 3
+    finalGameTitle.innerText = 'Game Over'
     seconds=0
     minutes= 5
     if (parseInt(highScore.innerHTML)<parseInt(score.innerHTML)) highScore.innerHTML = score.innerHTML
@@ -109,6 +110,7 @@ function BallMovement() {
 
         if (lives > 0) {
             heartLives[lives].remove()
+             pressToPLay.style.display = 'flex'
             return resetGame()
         } else {            
             heartLives[lives].remove()
@@ -213,13 +215,12 @@ function ballTouchTheBricks() {
 }
 
 function resetGame() {
-        moveY = -5
-        moveX = 5
-        ball.style.top = initialBallTop + 'px'
-        ball.style.left = initialBallLeft + 'px'
-        breaker.style.left = initialBreakerLeft + 'px'
-        finalGameTitle.innerText = 'Game Over'
-        pressToPLayFlag = true
+    moveY = -5
+    moveX = 5
+    ball.style.top = initialBallTop + 'px'
+    ball.style.left = initialBallLeft + 'px'
+    breaker.style.left = initialBreakerLeft + 'px'
+    pressToPLayFlag = true
 }
 
 document.addEventListener('keydown', (e) => {

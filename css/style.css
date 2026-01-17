@@ -261,3 +261,15 @@ button:hover {
     gap: 10px;
 
 }
+#logo{
+   animation: fadeInOut 1.5s infinite;
+
+}
+#pause-container p:nth-child(1){
+   animation: fadeInOut 1.5s infinite;
+
+}
+#final-game-title{
+   animation: fadeInOut 1.5s infinite;
+
+}
