@@ -218,6 +218,7 @@ function resetGame() {
         ball.style.top = initialBallTop + 'px'
         ball.style.left = initialBallLeft + 'px'
         breaker.style.left = initialBreakerLeft + 'px'
+        finalGameTitle.innerText = 'Game Over'
         pressToPLayFlag = true
 }
 
