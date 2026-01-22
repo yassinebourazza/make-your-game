@@ -43,9 +43,9 @@ let bricks,
     minutes,
     seconds,
     ballPlace,
+    containerPlace,
+    breakerPlace,
     animationBallMove,
-    initialBallTop,
-    initialBallLeft,
     initialBreakerLeft;
 
 let moveLeft = false;
@@ -77,40 +77,42 @@ function started(flag) {
 
     layers = BrickGenerator()
     if (flag) {
-        initialBallLeft = ball.offsetLeft
-        initialBallTop = ball.offsetTop
         initialBreakerLeft = breaker.offsetLeft
     } else {
       resetGame()
+
     }
 
     bricks = document.getElementsByClassName('brick')
-
+    
 }
 
 
 function BallMovement() {
-
-    ball.style.left = ball.offsetLeft + moveX + 'px'
-    ball.style.top = ball.offsetTop + moveY + 'px'
+    
+    ballPlace = ball.getBoundingClientRect()
+    containerPlace = container.getBoundingClientRect()
+    breakerPlace = breaker.getBoundingClientRect()
+    
     currentX += moveX
     currentY += moveY
-
+    ball.style.transform = `translate(${currentX}px,${currentY}px)`
+    
     ballTouchTheBricks()
-
-    if (ball.offsetLeft >= container.offsetLeft + (container.offsetWidth - 2) - (ball.offsetWidth)) {
+    
+    if (ballPlace.x >= containerPlace.x + (containerPlace.width - 2) - (ballPlace.width)) {
         moveX = moveX <= 0 ? moveX : -moveX
-    } else if (ball.offsetLeft < container.offsetLeft) {
+    } else if (ballPlace.x < containerPlace.x) {
         moveX = moveX >= 0 ? moveX : -moveX
-    } else if (ball.offsetTop < container.offsetTop) {
+    } else if (ballPlace.y < containerPlace.y) {
         moveY = moveY >= 0 ? moveY : -moveY
-    } else if (ball.offsetTop + ball.offsetHeight >= container.offsetTop + (container.offsetHeight) - (ball.offsetHeight / 2)) {
+    } else if (ballPlace.y + ballPlace.height >= containerPlace.y + (containerPlace.height) - (ballPlace.height / 2)) {
         console.log(lives, heartLives);
         lives--
-
+        
         if (lives > 0) {
             heartLives[lives].remove()
-             pressToPLay.style.display = 'flex'
+            pressToPLay.style.display = 'flex'
             return resetGame()
         } else {            
             heartLives[lives].remove()
@@ -119,23 +121,23 @@ function BallMovement() {
             return resetGame()
         }
     }
-
+    
     if (seconds == 0 && minutes ==0) {        
-            finalGameContainer.style.display ='flex'
-            pressToPLayFlag= false
-            return resetGame()
+        finalGameContainer.style.display ='flex'
+        pressToPLayFlag= false
+        return resetGame()
     }
-
+    
     frame++
     timer()
-    ballTouchTheBreaker()
+    ballTouchTheBreaker(breakerPlace)
     if (bricks.length==0) {
         finalGameTitle.innerText = 'You Win'
         finalGameContainer.style.display ='flex'
         pressToPLayFlag= false
         return resetGame()
     }
-    breakerMove()
+    breakerMove(breakerPlace)
     animationBallMove = requestAnimationFrame(BallMovement)
 }
 
@@ -152,19 +154,19 @@ function timer() {
 }
 
 function ballTouchTheBreaker() {
-    if (ball.offsetTop + ball.offsetHeight >= breaker.offsetTop && ball.offsetTop <= breaker.offsetTop
-        && ball.offsetLeft + (ball.offsetWidth / 2) >= breaker.offsetLeft
-        && ball.offsetLeft + (ball.offsetWidth / 2) <= breaker.offsetLeft + breaker.offsetWidth) {
-        if (ball.offsetLeft + (ball.offsetWidth / 2) <= breaker.offsetLeft + (breaker.offsetWidth * 1 / 7)) {
-            moveX = -5
-            moveY = -5
-        } else if (ball.offsetLeft + (ball.offsetWidth / 2) < breaker.offsetLeft + (breaker.offsetWidth * 2 / 7)) {
-            moveX = -3
+    if (ballPlace.y + ballPlace.height >= breakerPlace.y && ballPlace.y <= breakerPlace.y
+        && ballPlace.x + (ballPlace.width / 2) >= breakerPlace.x
+        && ballPlace.x + (ballPlace.width / 2) <= breakerPlace.x + breakerPlace.width) {
+            if (ballPlace.x + (ballPlace.width / 2) <= breakerPlace.x + (breakerPlace.width * 1 / 7)) {
+                moveX = -5
+                moveY = -5
+            } else if (ballPlace.x + (ballPlace.width / 2) < breakerPlace.x + (breakerPlace.width * 2 / 7)) {
+                moveX = -3
             moveY = -7
-        } else if (ball.offsetLeft + (ball.offsetWidth / 2) > breaker.offsetLeft + (breaker.offsetWidth * 6 / 7)) {
+        } else if (ballPlace.x + (ballPlace.width / 2) > breakerPlace.x + (breakerPlace.width * 6 / 7)) {
             moveX = 5
             moveY = -5
-        } else if (ball.offsetLeft + (ball.offsetWidth / 2) > breaker.offsetLeft + (breaker.offsetWidth * 5 / 7)) {
+        } else if (ballPlace.x + (ballPlace.width / 2) > breakerPlace.x + (breakerPlace.width * 5 / 7)) {
             moveX = 3
             moveY = -7
         } else {
@@ -175,11 +177,11 @@ function ballTouchTheBreaker() {
 }
 
 function breakerMove() {
-    if (moveRight && parseInt(breaker.offsetLeft) - 5 <= container.offsetLeft + container.offsetWidth - breaker.offsetWidth - 10) {
-        breaker.style.left = breaker.offsetLeft + 7 + 'px';
+    if (moveRight && parseInt(breakerPlace.x) - 7 <= containerPlace.x + containerPlace.width - breakerPlace.width - 10) {
+        breaker.style.left = breakerPlace.x + 7 + 'px';
     }
-    if (moveLeft && parseInt(breaker.offsetLeft) - 5 >= container.offsetLeft) {
-        breaker.style.left = breaker.offsetLeft - 7 + 'px';
+    if (moveLeft && parseInt(breakerPlace.x) - 7 >= containerPlace.x) {
+        breaker.style.left = breakerPlace.x - 7 + 'px';
     }
 
 }
@@ -187,24 +189,22 @@ function breakerMove() {
 
 function ballTouchTheBricks() {
     for (let layer in layers) {
-        if (ball.offsetTop >= layers[layer].yHeight) return
-        if (ball.offsetTop + ball.offsetHeight >= layers[layer].y) {
-            console.log(ball.offsetTop + ball.offsetHeight >= layers[layer].y);
+        if (ballPlace.y >= layers[layer].yHeight) return
+        if (ballPlace.y + ballPlace.height >= layers[layer].y) {
+            console.log(ballPlace.y + ballPlace.height >= layers[layer].y);
 
             for (let current of layers[layer].bricks) {
                 let br = current.getBoundingClientRect()
-                if (ball.offsetLeft + (ball.offsetWidth / 2) >= br.x && ball.offsetLeft + (ball.offsetWidth / 2) <= br.x + br.width) {
+                if (ballPlace.x + (ballPlace.width / 2) >= br.x && ballPlace.x + (ballPlace.width / 2) <= br.x + br.width) {
                     current.remove()
                     score.innerHTML = Number.parseInt(score.innerHTML) + 50 
-                    console.log(br, ballPlace, 'move y');
                     moveY = -moveY   
                     bricks = document.getElementsByClassName('brick')
-                } else if (ball.offsetTop + (ball.offsetWidth / 2) <= layers[layer].yHeight && ball.offsetTop + (ball.offsetWidth / 2) >= layers[layer].y) {
-                    if ((ball.offsetLeft + (ball.offsetWidth) >= br.x && ball.offsetLeft < br.x)
-                        || (ball.offsetLeft <= br.x + br.width && ball.offsetLeft + ball.offsetWidth >= br.x + br.width)) {
+                } else if (ballPlace.y + (ballPlace.width / 2) <= layers[layer].yHeight && ballPlace.y + (ballPlace.width / 2) >= layers[layer].y) {
+                    if ((ballPlace.x + (ballPlace.width) >= br.x && ballPlace.x < br.x)
+                        || (ballPlace.x <= br.x + br.width && ballPlace.x + ballPlace.width >= br.x + br.width)) {
                         current.remove()
                         score.innerHTML = Number.parseInt(score.innerHTML) + 50 
-                        console.log(br, ballPlace, 'move x');
                         moveX = -moveX
                         bricks = document.getElementsByClassName('brick')
                     }
@@ -217,8 +217,6 @@ function ballTouchTheBricks() {
 function resetGame() {
     moveY = -5
     moveX = 5
-    ball.style.top = initialBallTop + 'px'
-    ball.style.left = initialBallLeft + 'px'
     breaker.style.left = initialBreakerLeft + 'px'
     pressToPLayFlag = true
 }
