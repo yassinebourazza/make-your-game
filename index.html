@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="shortcut icon" href="assets/Picsart_26-01-08_22-47-52-260.png">
+    <title>arkanoid</title>
+</head>
+
+<body>
+    <div id="home-container">
+        <img id= "logo" src="assets/logo.png" alt="logo">
+        <button id="play"><img src="assets/play.svg" alt="restart">
+            <p>Start Game</p></button>
+       
+    </div>
+    <div id="game-container">
+        <header>
+            <span>
+                <p>High Score</p>
+                <p>Score</p>
+                <p>Time</p>
+            </span>
+            <span>
+                <p id="high-score">0</p>
+                <p id="score">0</p>
+                <p id="time"></p>
+            </span>
+        </header>
+        <div id="container">
+            <div id="ball"></div>
+            <p id="press-to-play">Press 'Space' to play</p>
+            <div id="breaker"></div>
+        </div>
+        <div id="control">
+            <div id="chances"></div>
+            <div>
+                <button id="pause-button"><img src="assets/pause.svg" alt="pause">
+                    <p>Pause</p>
+                </button>
+                
+            </div>
+        </div>
+    </div>
+    <div id="pause-container">
+        <p>pause</p>
+        <button id="resume-button"><img src="assets/resume.svg" alt="resume">
+            <p>Resume</p>
+        </button>
+        <button class="restart-button"><img src="assets/restart.svg" alt="restart">
+            <p>Restart</p>
+        </button>
+        <button class="exit-button"><img src="assets/exit.svg" alt="exit">
+            <p>Exit</p>
+        </button>
+    </div>
+    <div id="final-game-container">
+        <p id="final-game-title">Game Over</p>
+        <button class="restart-button"><img src="assets/restart.svg" alt="restart">
+            <p>Restart</p>
+        </button>
+        <button class="exit-button"><img src="assets/exit.svg" alt="exit">
+            <p>Exit</p>
+        </button>
+    </div>
+    <script type="module" src="js/game.js"></script>
+</body>
+
+</html>
